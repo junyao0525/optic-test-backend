@@ -1,0 +1,7 @@
+/image
+/output
+__pycache__/
+*.py[cod]
+
+
+/uploads
