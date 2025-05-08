@@ -46,7 +46,6 @@ def extract_exif_metadata(image):
     for tag_id, value in exif_data.items():
         tag = TAGS.get(tag_id, tag_id)
         metadata[tag] = value
-    print(f"EXIF Metadata: {metadata}")
     return metadata
 
 def calculate_fov_from_focal_length(focal_length_mm, sensor_width_mm):
@@ -124,7 +123,7 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
             return {"error": "No file uploaded.", "message": "Please provide an image."}
 
         contents = await file.read()
-
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         npimg = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
