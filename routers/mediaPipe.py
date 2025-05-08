@@ -124,20 +124,11 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
             return {"error": "No file uploaded.", "message": "Please provide an image."}
 
         contents = await file.read()
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}_{file.filename}"
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        
-    
-
-        with open(file_path, "wb") as f:
-            f.write(contents)
 
         npimg = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         print(f"Image shape: {img.shape}")  
-
 
         # # Draw center area box
         h, w, _ = img.shape
@@ -151,9 +142,6 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
         center_y1 = frame_center_y - center_height // 2
         center_x2 = frame_center_x + center_width // 2
         center_y2 = frame_center_y + center_height // 2
-        
-        # # Draw center area box in black with 2px thickness
-        cv2.rectangle(img, (center_x1, center_y1), (center_x2, center_y2), (0, 0, 0), 2)
 
         results = face_mesh.process(img_rgb)
 
@@ -214,25 +202,6 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
                 ]
                 landmark_data.append(single_landmarks)
 
-        # Save annotated image
-        annotated_filename = f"annotated_{timestamp}_{file.filename}"
-        annotated_path = os.path.join(OUTPUT_FOLDER, annotated_filename)
-        cv2.imwrite(annotated_path, img)
-        import json
-
-        # Build JSON data
-        record = {
-            "timestamp": timestamp,
-            "original_image": file_path,
-            "annotated_image": annotated_path,
-            "face_count": len(face_data),
-            "faces": face_data,
-        }
-
-        # Optional: Save to .json file
-        json_output_path = os.path.join(OUTPUT_FOLDER, f"record_{timestamp}.json")
-        with open(json_output_path, "w") as f:
-            json.dump(record, f, indent=2)
         
         result ={
             "timestamp": timestamp,
