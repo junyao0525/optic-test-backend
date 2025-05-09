@@ -131,3 +131,5 @@ sudo systemctl stop fastapi.service
 - Ensure your server's port (default `8000`) is open in the firewall.
 - You can run with `.env` support by including `python-dotenv` or using the `@env` loader.
 - Gunicorn should point to `main:app` (adjust if your file/module name is different).
+
+ssh -i "C:\Users\junyao\Downloads\MyLowCostVM_key.pem" azureuser@104.214.171.210
