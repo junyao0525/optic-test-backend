@@ -1,6 +1,7 @@
 server {
     listen 80;
     server_name 104.214.171.210;  # Replace with domain/IP
+    
     client_max_body_size 20M;
 
     location / {
