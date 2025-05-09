@@ -12,12 +12,6 @@ from PIL.ExifTags import TAGS
 
 router = APIRouter(prefix="/mediapipe", tags=["face-recognition-mediapipe"])
 
-UPLOAD_FOLDER = "uploads/mediapipe/input"
-OUTPUT_FOLDER = "uploads/mediapipe/output"
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-
 # Initialize Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
@@ -36,85 +30,13 @@ MIN_PUPIL_DISTANCE_PX = 50    # Minimum pupil distance in pixels to consider val
 MAX_PUPIL_DISTANCE_PX = 500   # Maximum pupil distance in pixels to consider valid
 CALIBRATION_FACTOR = 1.3      # Calibration factor to adjust for systematic error
 
-def extract_exif_metadata(image):
-    """Extracts and returns EXIF metadata as a dictionary."""
-    exif_data = image._getexif()
-    if not exif_data:
-        return {}
+KNOWN_FACE_WIDTH_CM = 14  # Average adult face width
+FOCAL_LENGTH_PX = 1100     # Approximate focal length, needs calibration for your camera
 
-    metadata = {}
-    for tag_id, value in exif_data.items():
-        tag = TAGS.get(tag_id, tag_id)
-        metadata[tag] = value
-    return metadata
 
-def calculate_fov_from_focal_length(focal_length_mm, sensor_width_mm):
-    """Calculate field of view in degrees from focal length and sensor width."""
-    return 2 * math.atan(sensor_width_mm / (2 * focal_length_mm)) * (180 / math.pi)
+def measure_distance(pupil_distance_px):
+    return (KNOWN_FACE_WIDTH_CM * FOCAL_LENGTH_PX) / pupil_distance_px
 
-def calibrate_camera(known_distance_cm, pupil_distance_px, image_width_px):
-    """Calibrate camera parameters using a known distance measurement."""
-    focal_length_px = (pupil_distance_px * known_distance_cm * 10) / KNOWN_PUPIL_WIDTH_MM
-    return focal_length_px
-
-def measure_distance(image_bytes, pupil_distance_px):
-    """
-    Calculate distance to face using improved formula that considers FOV and calibration.
-    
-    Args:
-        image_bytes: Raw image bytes
-        pupil_distance_px: Distance between pupils in pixels
-        
-    Returns:
-        float: Distance in centimeters, or None if calculation failed
-    """
-    try:
-        image = Image.open(io.BytesIO(image_bytes))
-        metadata = extract_exif_metadata(image)
-        image_width_px = metadata.get("ExifImageWidth") or image.width
-
-        # Try to get camera parameters from EXIF
-        focal_length_mm = metadata.get("FocalLength")
-        focal_length_35mm = metadata.get("FocalLengthIn35mmFilm")
-
-        if focal_length_mm and focal_length_35mm:
-            # Convert focal length from tuple if necessary
-            if isinstance(focal_length_mm, tuple):
-                focal_length_mm = focal_length_mm[0] / focal_length_mm[1]
-            
-            # Calculate sensor parameters
-            crop_factor = focal_length_35mm / focal_length_mm
-            sensor_width_mm = 36 / crop_factor  # Full-frame width is 36mm
-            
-            # Calculate FOV
-            fov_degrees = calculate_fov_from_focal_length(focal_length_mm, sensor_width_mm)
-            
-            # Convert focal length to pixels
-            focal_length_px = focal_length_mm * (image_width_px / sensor_width_mm)
-            
-            # Calculate distance using improved formula that considers FOV
-            # Formula: distance = (known_width * focal_length) / (pixel_width * tan(FOV/2))
-            fov_rad = math.radians(fov_degrees)
-            distance_mm = (KNOWN_PUPIL_WIDTH_MM * focal_length_px) / (pupil_distance_px * math.tan(fov_rad/2))
-            
-            # Apply calibration factor and convert to cm
-            distance_cm = (distance_mm / 10) * CALIBRATION_FACTOR
-            
-            return max(0, distance_cm)  # Ensure non-negative distance
-            
-        else:
-            print("Incomplete EXIF data. Using calibrated fallback.")
-            # Use calibrated focal length if available, otherwise use default
-            focal_length_px = DEFAULT_FOCAL_LENGTH_PX
-            
-            # Calculate distance using simplified formula with calibration factor
-            distance_cm = (KNOWN_PUPIL_WIDTH_MM * focal_length_px) / (pupil_distance_px * 10) * CALIBRATION_FACTOR
-            
-            return max(0, distance_cm)
-
-    except Exception as e:
-        print(f"Error calculating distance: {e}")
-        return None
 
 @router.post("/detect-face/")
 async def detect_faces_mediapipe(file: UploadFile = File(...)):
@@ -216,4 +138,4 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
 
 @router.get("/mediapipe-test/")
 async def hello_world_mediapipe():
-    return {"data": "Testing mediapipe router operational."}
+    return {"data": "Testing mediapipe router operational"}
