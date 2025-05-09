@@ -133,3 +133,5 @@ sudo systemctl stop fastapi.service
 - Gunicorn should point to `main:app` (adjust if your file/module name is different).
 
 ssh -i "C:\Users\junyao\Downloads\MyLowCostVM_key.pem" azureuser@104.214.171.210
+
+ tail -f /var/log/nginx/access.log
