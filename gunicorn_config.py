@@ -1,4 +1,12 @@
-workers = 4  # Number of worker processes (adjust based on CPU cores)
-worker_class = "uvicorn.workers.UvicornWorker"  # Use Uvicorn workers for ASGI
-bind = "0.0.0.0:8000"  # Bind to all network interfaces
-timeout = 120  # Request timeout (seconds)
+# gunicorn_conf.py
+
+# Example config
+workers = 4
+worker_class = "uvicorn.workers.UvicornWorker"
+timeout = 120
+
+# Optional (not directly controlling body size)
+limit_request_line = 8190  # Default is 4094
+limit_request_fields = 100
+
+# You may need to ensure Uvicorn itself accepts large bodies (see next)
