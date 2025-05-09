@@ -2,7 +2,7 @@ import os
 import io
 from datetime import datetime
 import math
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, logger
 import numpy as np
 import cv2
 import mediapipe as mp
@@ -49,7 +49,8 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
         npimg = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        print(f"Image shape: {img.shape}")  
+        print(f"Image shape: {img.shape}")
+        logger.info(f"Image shape: {img.shape}")
 
         # # Draw center area box
         h, w, _ = img.shape
@@ -114,8 +115,6 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
                 }
                 face_data.append(face_info)
 
-                print(f"Face Info: {face_info}")
-
                 # Store all landmarks for future use if needed
                 single_landmarks = [
                     {"x": int(lm.x * w), "y": int(lm.y * h)}
@@ -129,11 +128,14 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
             "face_count": len(face_data),
             "faces": face_data,
         }
+        print(f"Face detection result: {result}")
+        logger.info(f"Face detection result: {result}")
 
         return result
     
 
     except Exception as e:
+        logger.error(f"Error processing image: {e}")
         return {"error": str(e), "message": "An error occurred while processing the image."}
 
 @router.get("/mediapipe-test/")
