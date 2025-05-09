@@ -5,13 +5,10 @@ from routers import mediaPipe as mp
 from routers import haar_cascades as hc
 from fastapi.middleware.cors import CORSMiddleware
 
-import logging
+from logger.logger import logger
 
-logging.basicConfig(
-    level=logging.INFO,  # or DEBUG
-    format="%(asctime)s [%(levelname)s] %(message)s",
-)
-logger = logging.getLogger(__name__)
+logger.info("Starting FastAPI service...")
+
 
 
 app = FastAPI(

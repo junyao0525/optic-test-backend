@@ -2,7 +2,8 @@ import os
 import io
 from datetime import datetime
 import math
-from fastapi import APIRouter, UploadFile, File, logger
+from fastapi import APIRouter, UploadFile, File
+from logger.logger import logger
 import numpy as np
 import cv2
 import mediapipe as mp
@@ -45,7 +46,6 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
             return {"error": "No file uploaded.", "message": "Please provide an image."}
 
         contents = await file.read()
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         npimg = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -85,7 +85,7 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
                 pixel_distance = math.hypot(x2 - x1, y2 - y1)
                 
                 # Calculate distance to screen
-                distance_cm = measure_distance(contents,pixel_distance)
+                distance_cm = measure_distance(pixel_distance)
                 
                 # Draw distance info on the image
                 mid_x, mid_y = (x1 + x2) // 2, (y1 + y2) // 2
@@ -124,7 +124,6 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
 
         
         result ={
-            "timestamp": timestamp,
             "face_count": len(face_data),
             "faces": face_data,
         }
