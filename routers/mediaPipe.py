@@ -46,6 +46,11 @@ async def detect_faces_mediapipe(file: UploadFile = File(...)):
             return {"error": "No file uploaded.", "message": "Please provide an image."}
 
         contents = await file.read()
+
+        max_size = 10 * 1024 * 1024  # 10 MB
+        if len(contents) > max_size:
+            return {"error": "File too large.", "message": "The uploaded file exceeds the maximum size of 10 MB."}
+
         npimg = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
