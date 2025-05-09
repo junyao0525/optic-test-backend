@@ -2,6 +2,6 @@
 /output
 __pycache__/
 *.py[cod]
-
-
+venv/
+.venv
 /uploads
