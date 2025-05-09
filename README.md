@@ -96,6 +96,7 @@ sudo systemctl start fastapi.service
 ## 🧪 7. Verify Server Status
 
 ```bash
+sudo systemctl restart fastapi.service
 sudo systemctl status fastapi.service
 ```
 
@@ -135,3 +136,5 @@ sudo systemctl stop fastapi.service
 ssh -i "C:\Users\junyao\Downloads\MyLowCostVM_key.pem" azureuser@104.214.171.210
 
  tail -f /var/log/nginx/access.log
+
+ tail -f /var/log/nginx/error.log
