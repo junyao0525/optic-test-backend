@@ -8,8 +8,7 @@ import numpy as np
 import cv2
 import mediapipe as mp
 import json
-from PIL import Image
-from PIL.ExifTags import TAGS
+
 
 router = APIRouter(prefix="/mediapipe", tags=["face-recognition-mediapipe"])
 
