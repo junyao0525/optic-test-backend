@@ -23,13 +23,6 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_detection_confidence=0.5
 )
 
-# Constants
-KNOWN_PUPIL_WIDTH_MM = 63     # Average inter-pupillary distance for adults
-DEFAULT_FOCAL_LENGTH_PX = 2500 # Increased from 2000 to 2500 for better calibration
-DEFAULT_FOV_DEGREES = 60      # Default field of view in degrees
-MIN_PUPIL_DISTANCE_PX = 50    # Minimum pupil distance in pixels to consider valid
-MAX_PUPIL_DISTANCE_PX = 500   # Maximum pupil distance in pixels to consider valid
-CALIBRATION_FACTOR = 1.3      # Calibration factor to adjust for systematic error
 
 KNOWN_FACE_WIDTH_CM = 14  # Average adult face width
 FOCAL_LENGTH_PX = 1100     # Approximate focal length, needs calibration for your camera

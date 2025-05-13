@@ -138,3 +138,6 @@ ssh -i "C:\Users\junyao\Downloads\MyLowCostVM_key.pem" azureuser@104.214.171.210
  tail -f /var/log/nginx/access.log
 
  tail -f /var/log/nginx/error.log
+
+localhost
+ uvicorn main:app --host 192.168.100.8 --port 8000 --reload

@@ -1,9 +1,10 @@
 # main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from routers import mtcnn as ml
-from routers import mediaPipe as mp
-from routers import haar_cascades as hc
+from routers.src.face import mtcnn as ml
+from routers.src.face import mediaPipe as mp
+from routers.src.face import haar_cascades as hc
+from routers.src.audio import whisper_lora as wl
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -54,6 +55,8 @@ app.add_middleware(
         "http://104.214.171.210:8000", # Your VM IP with port
         "http://localhost:3000",      # Local development
         "http://localhost:8000",      # Local FastAPI
+        "http://192.168.100.8/",    # Local development with port
+        "http://192.168.100.8:8000/",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
@@ -76,12 +79,19 @@ app.add_middleware(
     allowed_hosts=[
         "104.214.171.210",    # Your VM IP
         "localhost",          # Local development
+        "192.168.100.8",    # Local development
     ]
 )
 
 # Register routers
 
+# face detection
 app.include_router(mp.router)
 app.include_router(hc.router)
 app.include_router(ml.router)
+app.include_router(wl.router)
+
+# whisper detection
+
+
 
