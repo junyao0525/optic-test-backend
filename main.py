@@ -8,9 +8,22 @@ from routers.src.audio import whisper_lora as wl
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
-
+from fastapi import File, UploadFile
 import logging
 from logger.logger import logger
+
+# Configure the body size limit - ADD THIS
+from starlette.datastructures import UploadFile as StarletteUploadFile
+from starlette.requests import Request as StarletteRequest
+import uvicorn
+
+# Increase the max size to 100MB (or your desired limit)
+MAX_SIZE = 100 * 1024 * 1024  # 100MB in bytes
+
+# Override the default file size handling
+StarletteUploadFile.spool_max_size = MAX_SIZE
+StarletteRequest.body_max_size = MAX_SIZE
+
 logging.basicConfig(
     level=logging.INFO,  # or DEBUG
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -27,7 +40,7 @@ class ErrorLoggingMiddleware(BaseHTTPMiddleware):
                     status_code=413,
                     content={
                         "error": "Payload Too Large",
-                        "message": "The uploaded file exceeds the maximum allowed size of 10MB",
+                        "message": f"The uploaded file exceeds the maximum allowed size of {MAX_SIZE/(1024*1024)}MB",
                         "path": str(request.url.path)
                     }
                 )
@@ -50,18 +63,11 @@ app.add_middleware(ErrorLoggingMiddleware)
 # Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://104.214.171.210",     # Your VM IP
-        "http://104.214.171.210:8000", # Your VM IP with port
-        "http://localhost:3000",      # Local development
-        "http://localhost:8000",      # Local FastAPI
-        "http://192.168.100.8/",    # Local development with port
-        "http://192.168.100.8:8000/",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=[
-        "Content-Type",
+        "Content-Type", 
         "Authorization",
         "Accept",
         "Content-Disposition",
@@ -79,19 +85,24 @@ app.add_middleware(
     allowed_hosts=[
         "104.214.171.210",    # Your VM IP
         "localhost",          # Local development
-        "192.168.100.8",    # Local development
+        "192.168.100.8",      # Local development
     ]
 )
 
 # Register routers
-
-# face detection
 app.include_router(mp.router)
 app.include_router(hc.router)
 app.include_router(ml.router)
 app.include_router(wl.router)
 
-# whisper detection
-
-
-
+if __name__ == "__main__":
+    # If running directly with python, use these settings
+    uvicorn.run(
+        "main:app", 
+        host="0.0.0.0", 
+        port=8000, 
+        reload=True,
+        limit_concurrency=20,
+        limit_max_requests=100,
+        timeout_keep_alive=120
+    )
