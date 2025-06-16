@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 fastapi>=0.115.12
 uvicorn>=0.27.1
 numpy>=2.2.5
@@ -10,3 +11,30 @@ pydub>=0.25.1
 torch>=2.2.0
 transformers>=4.37.2
 peft>=0.7.1
+=======
+# Core ML & Audio
+torch==2.7.1
+transformers==4.52.4
+sentencepiece==0.2.0
+mediapipe==0.10.21
+pydub==0.25.1
+sounddevice==0.5.2
+
+# FastAPI backend
+fastapi==0.115.12
+uvicorn==0.34.3
+python-multipart==0.0.20
+pydantic==2.11.7
+
+# Computer Vision
+opencv-python==4.11.0.86
+opencv-contrib-python==4.11.0.86
+matplotlib==3.10.3
+numpy>=1.23.0,<2.0.0
+scipy==1.15.3
+
+# Utility
+requests==2.32.4
+tqdm==4.67.1
+psutil==7.0.0
+>>>>>>> Stashed changes
