@@ -1,7 +1,7 @@
 
 # local run
 run:
-	 uvicorn main:app --host 192.168.100.8 --port 8000 --reload
+	 uvicorn main:app --host 192.168.100.8 --port 5000 --reload
 
 lint:
 	flake8 .

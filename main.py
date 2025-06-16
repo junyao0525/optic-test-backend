@@ -1,10 +1,8 @@
 # main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from routers.src.face import mtcnn as ml
 from routers.src.face import mediaPipe as mp
-from routers.src.face import haar_cascades as hc
-from routers.src.audio import whisper_lora as wl
+from routers.src.audio import whisper_small_en as ws
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -86,21 +84,20 @@ app.add_middleware(
         "104.214.171.210",    # Your VM IP
         "localhost",          # Local development
         "192.168.100.8",      # Local development
+        "192.168.1.6",          # Local development
     ]
 )
 
 # Register routers
 app.include_router(mp.router)
-app.include_router(hc.router)
-app.include_router(ml.router)
-app.include_router(wl.router)
+app.include_router(ws.router)
 
 if __name__ == "__main__":
     # If running directly with python, use these settings
     uvicorn.run(
         "main:app", 
         host="0.0.0.0", 
-        port=8000, 
+        port=5000,  # Changed from 8000 to 5000
         reload=True,
         limit_concurrency=20,
         limit_max_requests=100,
