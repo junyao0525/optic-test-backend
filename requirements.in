@@ -1,2 +1,12 @@
-opencv_contrib_python==4.11.0.86
-opencv_python==4.11.0.86
+fastapi>=0.115.12
+uvicorn>=0.27.1
+numpy>=2.2.5
+opencv-python>=4.11.0.86
+Pillow>=11.2.1
+starlette>=0.46.2
+mediapipe>=0.10.21
+python-multipart>=0.0.9
+pydub>=0.25.1
+torch>=2.2.0
+transformers>=4.37.2
+peft>=0.7.1
