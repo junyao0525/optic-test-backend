@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from routers.src.face import mediaPipe as mp
+from routers.src.face import fatigue as ft
 from routers.src.audio import whisper_small_en as ws
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -84,6 +85,7 @@ app.add_middleware(
         "104.214.171.210",    # Your VM IP
         "localhost",          # Local development
         "192.168.100.8",      # Local development
+        "192.168.100.7",
         "192.168.1.6",          # Local development
     ]
 )
@@ -91,6 +93,7 @@ app.add_middleware(
 # Register routers
 app.include_router(mp.router)
 app.include_router(ws.router)
+app.include_router(ft.router)
 
 if __name__ == "__main__":
     # If running directly with python, use these settings
