@@ -101,6 +101,6 @@ async def audio_transcriber(file: UploadFile = File(...), language: str = Form("
             print(f"Error cleaning up temporary file: {str(e)}")
 
 
-@router.post("/test/")
-async def test(file: UploadFile = File(...)):
+@router.get("/test/")
+async def test():
      return {"data": "Testing whishper router operational"}

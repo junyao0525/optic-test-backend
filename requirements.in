@@ -5,10 +5,13 @@ sentencepiece==0.2.0
 mediapipe==0.10.21
 pydub==0.25.1
 sounddevice==0.5.2
+peft==0.15.2
+ffprobe==0.5
 
 # FastAPI backend
 fastapi==0.115.12
 uvicorn==0.34.3
+gunicorn==21.2.0
 python-multipart==0.0.20
 pydantic==2.11.7
 

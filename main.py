@@ -81,13 +81,7 @@ app.add_middleware(
 # Configure trusted hosts middleware
 app.add_middleware(
     TrustedHostMiddleware, 
-    allowed_hosts=[
-        "104.214.171.210",    # Your VM IP
-        "localhost",          # Local development
-        "192.168.100.8",      # Local development
-        "192.168.100.7",
-        "192.168.1.6",          # Local development
-    ]
+    allowed_hosts=["*"]
 )
 
 # Register routers
@@ -100,7 +94,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app", 
         host="0.0.0.0", 
-        port=5000,  # Changed from 8000 to 5000
+        port=80,  # Changed from 8000 to 5000
         reload=True,
         limit_concurrency=20,
         limit_max_requests=100,

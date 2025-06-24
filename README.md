@@ -141,3 +141,6 @@ ssh -i "C:\Users\junyao\Downloads\MyLowCostVM_key.pem" azureuser@104.214.171.210
 
 localhost
  uvicorn main:app --host 192.168.100.8 --port 8000 --reload
+
+
+ pip freeze | grep -v ' @ file' > requirements.txt
