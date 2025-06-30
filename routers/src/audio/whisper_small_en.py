@@ -24,7 +24,7 @@ model.eval()
 
 
 @router.post("/audio-transcriber/")
-async def audio_transcriber(file: UploadFile = File(...), language: str = Form("en")):
+async def audio_transcriber(file: UploadFile = File(...)):
     try:
         if not file:
             return {"error": "No file uploaded."}
@@ -39,7 +39,12 @@ async def audio_transcriber(file: UploadFile = File(...), language: str = Form("
         
         language = "en"
         processor = WhisperProcessor.from_pretrained(peft_config.base_model_name_or_path)
-        forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task="transcribe")
+        
+        # Fix tokenizer configuration to avoid attention mask warnings
+        if processor.tokenizer.pad_token is None:
+            processor.tokenizer.pad_token = processor.tokenizer.eos_token
+        if processor.tokenizer.pad_token_id is None:
+            processor.tokenizer.pad_token_id = processor.tokenizer.eos_token_id
         
         # 2. Save audio to temp file
         try:
@@ -70,18 +75,35 @@ async def audio_transcriber(file: UploadFile = File(...), language: str = Form("
 
         # 4. Tokenize
         try:
-            input_features = processor(
+            # Fix attention mask warning by explicitly setting return_attention_mask=True
+            processed = processor(
                 samples, 
                 sampling_rate=16000, 
-                return_tensors="pt"
-            ).input_features
+                return_tensors="pt",
+                return_attention_mask=True  # Explicitly request attention mask
+            )
+            input_features = processed.input_features
+            attention_mask = processed.attention_mask if hasattr(processed, 'attention_mask') else None
+            
+            print(f"Input features shape: {input_features.shape}")
+            if attention_mask is not None:
+                print(f"Attention mask shape: {attention_mask.shape}")
+            
         except Exception as e:
             print(f"Error tokenizing audio: {str(e)}")
             return {"error": f"Error tokenizing audio: {str(e)}"}
 
         # 5. Generate transcription
         try:
-            predicted_ids = model.generate(input_features)
+            # Pass attention mask if available
+            if attention_mask is not None:
+                predicted_ids = model.generate(
+                    input_features,
+                    attention_mask=attention_mask
+                )
+            else:
+                predicted_ids = model.generate(input_features)
+                
             transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
             print(f"Transcription: {transcription}")
             return {"transcription": transcription}
